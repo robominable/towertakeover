@@ -24,7 +24,10 @@ vex::motor LeftTray = vex::motor(PORT6, vex::gearSetting::ratio36_1, false); //p
 vex::motor RightTray = vex::motor(PORT7, vex::gearSetting::ratio36_1, false); //ports may need to be changed later based on dead ports
 
 //sensors
-
+vex::encoder LeftDrive = vex::encoder(vex::triport::A); //uses ports A and B
+vex::encoder RightDrive = vex::encoder(vex::triport::C); //uses ports C and D
+vex::pot LeftTrayPot = vex::pot(vex::triport::E);
+vex::pot RightTrayPot = vex::pot(vex::triport::F);
 
 void pre_auton( void ) {
   
