@@ -7,6 +7,9 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 #include "vex.h"
+#include "auton.cpp"
+#include "failsafes.cpp"
+#include "definitions.cpp"
 
 using namespace vex;
 
