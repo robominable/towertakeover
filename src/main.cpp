@@ -19,12 +19,14 @@ vex::controller Controller = vex::controller(vex::controllerType::primary);
 //motors
 vex::motor FLdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
 vex::motor FRdrive = vex::motor(PORT10, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
-vex::motor DR4B = vex::motor(PORT5, vex::gearSetting::ratio36_1, false);
-vex::motor liftMotor = vex::motor(PORT6, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B1 = vex::motor(PORT5, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B2 = vex::motor(PORT9, vex::gearSetting::ratio36_1, false);
+vex::motor liftMotor1 = vex::motor(PORT6, vex::gearSetting::ratio36_1, false);
+vex::motor liftMotor2 = vex::motor(PORT12, vex::gearSetting::ratio36_1, false);
 vex::motor clawMotor = vex::motor(PORT7, vex::gearSetting::ratio18_1, false);
 vex::motor intakeMotor = vex::motor(PORT8, vex::gearSetting::ratio18_1, false);
-
-
+vex::motor_group DR4B( DR4B1, DR4B2);
+vex::motor_group liftMotor( liftMotor1, liftMotor2);
 //sensors
 
 //jumpers
@@ -52,6 +54,11 @@ float clawEfficiency = 100;
 //intake motor
 float intakeTemp = 0;
 float intakeEfficiency = 100;
+
+//controller setup
+bool backButtonToggle = true;
+bool upDownButtonToggle = true;
+bool leftRightButtonToggle = true;
 
 //failsafe code goes here. would apply in all circumstances
 //variables for sanity. called continuously in task main of main.cpp
@@ -104,7 +111,34 @@ void usercontrol( void ) {
             else{
                 FRdrive.stop();
               }
-    vex::task::sleep(20);
+    if(Controller.ButtonL1.pressing() == backButtonToggle){
+      liftMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+    }
+      else if(Controller.ButtonL2.pressing() == !backButtonToggle){
+        liftMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
+      }
+      else{
+        liftMotor.stop(vex::brakeType::brake);
+      }
+    if(Controller.ButtonR1.pressing() == backButtonToggle){
+      DR4B.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+    }
+      else if(Controller.ButtonR2.pressing() == !backButtonToggle){
+        DR4B.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
+      }
+      else{
+        DR4B.stop(vex::brakeType::brake);
+      }
+    if(Controller.ButtonX.pressing() == upDownButtonToggle){
+      clawMotor.spin(vex::directionType::fwd, 100, vex::percentUnits::pct);
+    }
+      else if(Controller.ButtonY.pressing() == !upDownButtonToggle){
+        clawMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
+      }
+      else{
+        clawMotor.stop(vex::brakeType::brake);
+      }
+    vex::task::sleep(10);
   }
 }
 
