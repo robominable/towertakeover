@@ -14,13 +14,11 @@ using namespace vex;
 
 vex::brain       Brain;
 vex::competition Competition;
-vex::controller controller = vex::controller(vex::controllerType::primary);
+vex::controller Controller = vex::controller(vex::controllerType::primary);
 
 //motors
-vex::motor FLdrive = vex::motor(PORT1, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
-vex::motor FRdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
-vex::motor BLdrive = vex::motor(PORT3, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
-vex::motor BRdrive = vex::motor(PORT4, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports 
+vex::motor FLdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
+vex::motor FRdrive = vex::motor(PORT10, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
 vex::motor DR4B = vex::motor(PORT5, vex::gearSetting::ratio36_1, false);
 vex::motor liftMotor = vex::motor(PORT6, vex::gearSetting::ratio36_1, false);
 vex::motor clawMotor = vex::motor(PORT7, vex::gearSetting::ratio18_1, false);
@@ -61,12 +59,8 @@ void variable_set() {
   //drive variables
   FLtemp = FLdrive.temperature(percentUnits::pct);
   FRtemp = FRdrive.temperature(percentUnits::pct);
-  BLtemp = BLdrive.temperature(percentUnits::pct);
-  BRtemp = BRdrive.temperature(percentUnits::pct);
   FLefficiency = FLdrive.efficiency(percentUnits::pct);
   FRefficiency = FRdrive.efficiency(percentUnits::pct);
-  BLefficiency = FLdrive.efficiency(percentUnits::pct);
-  BRefficiency = FRdrive.efficiency(percentUnits::pct);
   //DR4B variables
   DR4Btemp = DR4B.temperature(percentUnits::pct);
   DR4Befficiency = DR4B.efficiency(percentUnits::pct);
@@ -96,7 +90,20 @@ void autonomous( void ) {
 
 void usercontrol( void ) {
   while (1) {
- 
+    int creep;
+        creep = float(0.05);
+        if (Controller.Axis3.position(vex::percentUnits::pct) > creep || Controller.Axis3.position(vex::percentUnits::pct) < -creep){
+            FLdrive.spin(vex::directionType::fwd,(Controller.Axis3.position(vex::percentUnits::pct)),vex::velocityUnits::pct);
+        }
+            else{
+                FLdrive.stop();
+            }
+        if (Controller.Axis2.position(vex::percentUnits::pct) > creep || Controller.Axis2.position(vex::percentUnits::pct) < -creep){
+            FRdrive.spin(vex::directionType::fwd,(Controller.Axis2.position(vex::percentUnits::pct)),vex::velocityUnits::pct);
+        }
+            else{
+                FRdrive.stop();
+              }
     vex::task::sleep(20);
   }
 }
