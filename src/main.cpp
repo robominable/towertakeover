@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
 /*    Author:       Todd Rylaarsadm                                           */
@@ -20,11 +20,10 @@ vex::controller Controller = vex::controller(vex::controllerType::primary);
 vex::motor FLdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
 vex::motor FRdrive = vex::motor(PORT10, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
 vex::motor DR4B1 = vex::motor(PORT5, vex::gearSetting::ratio36_1, false);
-vex::motor DR4B2 = vex::motor(PORT9, vex::gearSetting::ratio36_1, false);
-vex::motor liftMotor1 = vex::motor(PORT6, vex::gearSetting::ratio36_1, false);
-vex::motor liftMotor2 = vex::motor(PORT12, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B2 = vex::motor(PORT8, vex::gearSetting::ratio36_1, false);
+vex::motor liftMotor1 = vex::motor(PORT3, vex::gearSetting::ratio36_1, false);
+vex::motor liftMotor2 = vex::motor(PORT9, vex::gearSetting::ratio36_1, false);
 vex::motor clawMotor = vex::motor(PORT7, vex::gearSetting::ratio18_1, false);
-vex::motor intakeMotor = vex::motor(PORT8, vex::gearSetting::ratio18_1, false);
 vex::motor_group DR4B( DR4B1, DR4B2);
 vex::motor_group liftMotor( liftMotor1, liftMotor2);
 //sensors
@@ -77,9 +76,7 @@ void variable_set() {
   //claw variables
   clawTemp = clawMotor.temperature(percentUnits::pct);
   clawEfficiency = clawMotor.efficiency(percentUnits::pct);
-  //intake variables
-  intakeTemp = intakeMotor.temperature(percentUnits::pct);
-  intakeEfficiency = intakeMotor.efficiency(percentUnits::pct);
+
 }
 
 void brainDebugMode() {
@@ -92,7 +89,9 @@ void pre_auton( void ) {
 }
 
 void autonomous( void ) {
-  
+  //auton template
+  /*
+  */
 }
 
 void usercontrol( void ) {
@@ -111,28 +110,29 @@ void usercontrol( void ) {
             else{
                 FRdrive.stop();
               }
-    if(Controller.ButtonL1.pressing() == backButtonToggle){
+    if(Controller.ButtonA.pressing() == 1){
       liftMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
     }
-      else if(Controller.ButtonL2.pressing() == !backButtonToggle){
+      else if(Controller.ButtonX.pressing() == 1){
         liftMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
       }
       else{
         liftMotor.stop(vex::brakeType::brake);
       }
-    if(Controller.ButtonR1.pressing() == backButtonToggle){
+    
+    if(Controller.ButtonR1.pressing() == 1){
       DR4B.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
     }
-      else if(Controller.ButtonR2.pressing() == !backButtonToggle){
+      else if(Controller.ButtonR2.pressing() == 1){
         DR4B.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
       }
       else{
         DR4B.stop(vex::brakeType::brake);
       }
-    if(Controller.ButtonX.pressing() == upDownButtonToggle){
+    if(Controller.ButtonL1.pressing() == 1){
       clawMotor.spin(vex::directionType::fwd, 100, vex::percentUnits::pct);
     }
-      else if(Controller.ButtonY.pressing() == !upDownButtonToggle){
+      else if(Controller.ButtonL2.pressing() == 1){
         clawMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
       }
       else{
