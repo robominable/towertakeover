@@ -19,11 +19,11 @@ vex::controller Controller = vex::controller(vex::controllerType::primary);
 //motors
 vex::motor FLdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
 vex::motor FRdrive = vex::motor(PORT10, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
-vex::motor DR4B1 = vex::motor(PORT5, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B1 = vex::motor(PORT6, vex::gearSetting::ratio36_1, true);
 vex::motor DR4B2 = vex::motor(PORT8, vex::gearSetting::ratio36_1, false);
-vex::motor liftMotor1 = vex::motor(PORT3, vex::gearSetting::ratio36_1, false);
+vex::motor liftMotor1 = vex::motor(PORT3, vex::gearSetting::ratio36_1, true);
 vex::motor liftMotor2 = vex::motor(PORT9, vex::gearSetting::ratio36_1, false);
-vex::motor clawMotor = vex::motor(PORT7, vex::gearSetting::ratio18_1, false);
+vex::motor clawMotor = vex::motor(PORT17, vex::gearSetting::ratio18_1, false);
 vex::motor_group DR4B( DR4B1, DR4B2);
 vex::motor_group liftMotor( liftMotor1, liftMotor2);
 //sensors
@@ -117,26 +117,26 @@ void usercontrol( void ) {
         liftMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
       }
       else{
-        liftMotor.stop(vex::brakeType::brake);
+        liftMotor.stop(vex::brakeType::hold);
       }
     
     if(Controller.ButtonR1.pressing() == 1){
-      DR4B.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+      DR4B.spin(vex::directionType::fwd, 50, vex::velocityUnits::pct);
     }
       else if(Controller.ButtonR2.pressing() == 1){
         DR4B.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
       }
       else{
-        DR4B.stop(vex::brakeType::brake);
+        DR4B.stop(vex::brakeType::hold);
       }
     if(Controller.ButtonL1.pressing() == 1){
-      clawMotor.spin(vex::directionType::fwd, 100, vex::percentUnits::pct);
+      clawMotor.spin(vex::directionType::fwd, 50, vex::percentUnits::pct);
     }
       else if(Controller.ButtonL2.pressing() == 1){
-        clawMotor.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
+        clawMotor.spin(vex::directionType::rev, 50, vex::percentUnits::pct);
       }
       else{
-        clawMotor.stop(vex::brakeType::brake);
+        clawMotor.stop(vex::brakeType::hold);
       }
     vex::task::sleep(10);
   }
