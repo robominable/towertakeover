@@ -92,6 +92,11 @@ void autonomous( void ) {
   //auton template
   /*
   */
+  FLdrive.spin(fwd, 100, pct);
+  FRdrive.spin(fwd, 100, pct);
+  vex::task::sleep(250);
+  FLdrive.stop();
+  FRdrive.stop();
 }
 
 void usercontrol( void ) {
@@ -121,10 +126,10 @@ void usercontrol( void ) {
       }
     
     if(Controller.ButtonR1.pressing() == 1){
-      DR4B.spin(vex::directionType::fwd, 30, vex::velocityUnits::pct);
+      DR4B.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
     }
       else if(Controller.ButtonR2.pressing() == 1){
-        DR4B.spin(vex::directionType::rev, 100, vex::percentUnits::pct);
+        DR4B.spin(vex::directionType::rev, 30, vex::percentUnits::pct);
       }
       else{
         DR4B.stop(vex::brakeType::hold);
