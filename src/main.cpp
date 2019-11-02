@@ -97,6 +97,30 @@ void autonomous( void ) {
   vex::task::sleep(250);
   FLdrive.stop();
   FRdrive.stop();
+  DR4B.spin(fwd,55,pct);
+  vex::task::sleep(150);
+  DR4B.stop(vex::brakeType::hold);
+  FLdrive.spin(fwd,-100,pct);
+  FRdrive.spin(fwd,100,pct);
+  vex::task::sleep(575);
+  FLdrive.spin(fwd,100,pct);
+  FRdrive.spin(fwd,100,pct);
+  vex::task::sleep(1000);
+  FLdrive.stop();
+  FRdrive.stop();
+  clawMotor.spin(fwd,-75,pct);
+  vex::task::sleep(150);
+  clawMotor.stop();
+  FLdrive.spin(fwd,70,pct);
+  FRdrive.spin(fwd,70,pct);
+  vex::task::sleep(450);
+  clawMotor.spin(fwd,-100,pct);
+  vex::task::sleep(350);
+  FLdrive.stop();
+  FRdrive.stop();
+  clawMotor.spin(fwd,40,pct);
+  vex::task::sleep(150);
+  clawMotor.spin(fwd,-100,pct);
 }
 
 void usercontrol( void ) {
