@@ -17,15 +17,16 @@ vex::competition Competition;
 vex::controller Controller = vex::controller(vex::controllerType::primary);
 
 //motors
-vex::motor FLdrive = vex::motor(PORT2, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
-vex::motor FRdrive = vex::motor(PORT10, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
-vex::motor DR4B1 = vex::motor(PORT6, vex::gearSetting::ratio36_1, false);
-vex::motor DR4B2 = vex::motor(PORT8, vex::gearSetting::ratio36_1, true);
-vex::motor liftMotor1 = vex::motor(PORT3, vex::gearSetting::ratio36_1, true);
-vex::motor liftMotor2 = vex::motor(PORT9, vex::gearSetting::ratio36_1, false);
-vex::motor clawMotor = vex::motor(PORT17, vex::gearSetting::ratio18_1, true);
+vex::motor FLdrive = vex::motor(PORT14, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
+vex::motor FRdrive = vex::motor(PORT13, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
+vex::motor DR4B1 = vex::motor(PORT15, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B2 = vex::motor(PORT18, vex::gearSetting::ratio36_1, true);
+vex::motor liftMotor = vex::motor(PORT20, vex::gearSetting::ratio36_1, true);
+vex::motor intakeL = vex::motor(PORT12, vex::gearSetting::ratio6_1, false);
+vex::motor clawMotor = vex::motor(PORT19, vex::gearSetting::ratio18_1, true);
+vex::motor intakeR = vex::motor(PORT21, vex::gearSetting::ratio6_1, true);
 vex::motor_group DR4B( DR4B1, DR4B2);
-vex::motor_group liftMotor( liftMotor1, liftMotor2);
+vex::motor_group intake( intakeL, intakeR );
 //sensors
 
 //jumpers
@@ -59,6 +60,12 @@ bool backButtonToggle = true;
 bool upDownButtonToggle = true;
 bool leftRightButtonToggle = true;
 
+//auton setup
+uint32_t loopCount = 12*1000;
+uint8_t     myTestData[15000];
+uint8_t     myReadBuffer[15000];
+int nWritten = 0;
+
 //failsafe code goes here. would apply in all circumstances
 //variables for sanity. called continuously in task main of main.cpp
 void variable_set() {
@@ -89,38 +96,58 @@ void pre_auton( void ) {
 }
 
 void autonomous( void ) {
-  //auton template
-  /*
-  */
-  FLdrive.spin(fwd, 100, pct);
-  FRdrive.spin(fwd, 100, pct);
-  vex::task::sleep(250);
-  FLdrive.stop();
-  FRdrive.stop();
-  DR4B.spin(fwd,55,pct);
-  vex::task::sleep(150);
-  DR4B.stop(vex::brakeType::hold);
-  FLdrive.spin(fwd,-100,pct);
-  FRdrive.spin(fwd,100,pct);
-  vex::task::sleep(575);
-  FLdrive.spin(fwd,100,pct);
-  FRdrive.spin(fwd,100,pct);
-  vex::task::sleep(1000);
-  FLdrive.stop();
-  FRdrive.stop();
-  clawMotor.spin(fwd,-75,pct);
-  vex::task::sleep(150);
-  clawMotor.stop();
-  FLdrive.spin(fwd,70,pct);
-  FRdrive.spin(fwd,70,pct);
-  vex::task::sleep(450);
-  clawMotor.spin(fwd,-100,pct);
-  vex::task::sleep(350);
-  FLdrive.stop();
-  FRdrive.stop();
-  clawMotor.spin(fwd,40,pct);
-  vex::task::sleep(150);
-  clawMotor.spin(fwd,-100,pct);
+  int nRead = Brain.SDcard.loadfile( "test.txt", myReadBuffer, sizeof(myReadBuffer) );
+
+        // display on screen how many bytes we read
+        Brain.Screen.setCursor( 3, 2 );
+        Brain.Screen.print( "We read %d bytes from the SD Card", nRead );
+
+        // and display some of the data
+        Brain.Screen.setCursor( 6, 2 );
+        for(int i=0;i<8;i++)
+            Brain.Screen.print("%i ", myReadBuffer[i]);
+
+    for(int i=0;i<loopCount;i=i+12)
+    {
+      if((int)myReadBuffer[i+0]){
+        FLdrive.spin(forward, (int)myReadBuffer[i+0], pct);
+      }
+      
+      if((int)myReadBuffer[i+3]){
+        FLdrive.spin(reverse, ((float)myReadBuffer[i+3]), pct);
+      }
+      
+      //else{
+      //  Lmotor.stop();
+      //}
+
+      if((int)myReadBuffer[i+1]){
+        FRdrive.spin(forward, (int)myReadBuffer[i+1], pct);
+      }
+      
+      if((int)myReadBuffer[i+4]){
+        FRdrive.spin(reverse, ((float)myReadBuffer[i+4]), pct);
+      }
+      //else {
+      //  Rmotor.stop();
+      //}
+
+      if((int)myReadBuffer[i+2]){
+        DR4B.spin(forward, (int)myReadBuffer[i+2], pct);
+      }
+      else if((int)myReadBuffer[i+5]){
+        DR4B.spin(reverse, (int)myReadBuffer[i+5], pct);
+      }
+      else{
+        DR4B.stop();
+      }
+      //else {
+        //Lift.stop(brakeType::brake);
+      //}      
+      vex::task::sleep(15);
+  
+
+    }
 }
 
 void usercontrol( void ) {
@@ -167,6 +194,15 @@ void usercontrol( void ) {
       else{
         clawMotor.stop(vex::brakeType::hold);
       }
+    if(Controller.ButtonRight.pressing() == 1){
+    intake.spin(vex::directionType::fwd, 75, vex::percentUnits::pct);
+  }
+    else if(Controller.ButtonLeft.pressing() == 1){
+      intake.spin(vex::directionType::rev, 75, vex::percentUnits::pct);
+    }
+    else if(Controller.ButtonDown.pressing() == 1){
+      intake.stop(vex::brakeType::hold);
+    }
     vex::task::sleep(10);
   }
 }
