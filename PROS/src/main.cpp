@@ -81,46 +81,55 @@ void autonomous() {
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor Ldrive(1);
-	pros::Motor Rdrive(2);
-	pros::Motor Ltilter(3);
-	pros::Motor Rtilter(4);
-	pros::Motor Lintake(5);
-	pros::Motor Rintake(6);
-	pros::Motor Llift(7);
-	pros::Motor Rlift(8);
+	pros::Motor Ldrive(1); //motor port declaration
+	pros::Motor Rdrive(2); //motor port declaration
+	pros::Motor Ltilter(3); //motor port declaration
+	pros::Motor Rtilter(4); //motor port declaration
+	pros::Motor Lintake(5); //motor port declaration
+	pros::Motor Rintake(6); //motor port declaration
+	pros::Motor Llift(7); //motor port declaration
+	pros::Motor Rlift(8); //motor port declaration
 	while (true) {
 		//pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		//                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		//                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
-		float creep = 10;
-		int tilterButtonUp = master.get_digital(DIGITAL_X);
-		int tilterButtonDown = master.get_digital(DIGITAL_A);
-		int tilterControl = 0;
-		int tilterUpPower = 127;
-		int tilterDownPower = -127;
+		int left = master.get_analog(ANALOG_LEFT_Y); //sets joystick value to variable used for Ldrive control
+		int right = master.get_analog(ANALOG_RIGHT_Y); //sets joystick value to variable used for Rdrive control
+		float creep = 10; //virtual deadzone amount
+		int tilterButtonUp = master.get_digital(DIGITAL_X); //tilter up button
+		int tilterButtonDown = master.get_digital(DIGITAL_A); //tilter down button
+		int tilterControl = 0; //tilter velocity value (set in later function)
+		int tilterUpPower = 127; //speed to be set when tilterButtonUp is pressed
+		int tilterDownPower = -127; //speed to be set when tilterButtonDown is pressed
 
-		Ldrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		Rdrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-		Ltilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		Rtilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		Lintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		Rintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		Llift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-		Rlift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Ldrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST); //universal coast braketype for Ldrive
+		Rdrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST); //universal coast braketype for Rdrive
+		Ltilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Ltilter
+		Rtilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Rtilter
+		Lintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Lintake
+		Rintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Rintake
+		Llift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Llift
+		Rlift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD); //universal hold braketype for Rlift
+
+		Ldrive.set_gearing(pros::E_MOTOR_GEARSET_18); //sets Ldrive encoder to use default cartridge
+		Rdrive.set_gearing(pros::E_MOTOR_GEARSET_18); //sets Rdrive encoder to use default cartridge
+		Ltilter.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Ltilter encoder to use torque cartridge
+		Rtilter.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Rtilter encoder to use torque cartridge
+		Lintake.set_gearing(pros::E_MOTOR_GEARSET_18); //sets Lintake encoder to use default cartridge
+		Rintake.set_gearing(pros::E_MOTOR_GEARSET_18); //sets Rintake encoder to use default cartridge
+		Llift.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Llift encoder to use torque cartridge
+		Rlift.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Rlift encoder to use torque cartridge
 
 		if(tilterButtonUp){
-			tilterControl = tilterUpPower;
+			tilterControl = tilterUpPower; //set tilter power to forward  at tilterUpPower amount
 		}
 		else if(tilterButtonDown){
-			tilterControl = tilterDownPower;
+			tilterControl = tilterDownPower; //set tilter power to backward at tilterDownPower amount
 		}
 
-		if(abs(left) > creep || abs(right) > creep){
-			Ldrive.move(left);
-			Rdrive.move(right);
+		if(abs(left) > creep || abs(right) > creep){ //eliminate miscalibration in motors
+			Ldrive.move(left); //move Ldrive
+			Rdrive.move(right); //move Rdrive
 	  }
 		else{}
 
