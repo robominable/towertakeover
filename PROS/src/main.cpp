@@ -88,16 +88,55 @@ void opcontrol() {
 	pros::Motor Lintake(5);
 	pros::Motor Rintake(6);
 	pros::Motor Llift(7);
-	pros::Motor Rlit(8);
+	pros::Motor Rlift(8);
 	while (true) {
 		//pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		//                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		//                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
+		float creep = 10;
+		int tilterButtonUp = master.get_digital(DIGITAL_X);
+		int tilterButtonDown = master.get_digital(DIGITAL_A);
+		int tilterControl = 0;
+		int tilterUpPower = 127;
+		int tilterDownPower = -127;
 
-		Ldrive = left;
-		Rdrive = right;
+		Ldrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		Rdrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		Ltilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Rtilter.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Lintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Rintake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Llift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+		Rlift.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+		if(tilterButtonUp){
+			tilterControl = tilterUpPower;
+		}
+		else if(tilterButtonDown){
+			tilterControl = tilterDownPower;
+		}
+
+		if(abs(left) > creep || abs(right) > creep){
+			Ldrive.move(left);
+			Rdrive.move(right);
+	  }
+		else{}
+
+		if(tilterControl==127){
+			Ltilter.move(tilterControl);
+			Rtilter.move(tilterControl);
+		}
+		else if(tilterControl==-127){
+			Ltilter.move(tilterControl);
+			Rtilter.move(tilterControl);
+		}
+		else{
+			Ltilter.move_velocity(0);
+			Rtilter.move_velocity(0);
+		}
+
 		pros::delay(20);
 	}
 }
