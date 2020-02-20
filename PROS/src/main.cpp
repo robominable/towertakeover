@@ -167,34 +167,38 @@ void opcontrol() {
 			Ltilter_power = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
 			Rtilter_power = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
 		}
+
 		//lift PID velocity scaling
 		if(Llift.get_gearing() == pros::E_MOTOR_GEARSET_36 && Llift.get_gearing() == pros::E_MOTOR_GEARSET_36){
-			tilterControl = tilterControl * 1; //sets correct velocity factor for PID loop when gearing=36
+			Llift_power = liftControl * 1; //sets correct velocity factor for PID loop when gearing=36
+			Rlift_power = liftControl * 1; //sets correct velocity factor for PID loop when gearing=36
 		}
-		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_18 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_18){
-			tilterControl = tilterControl * 2; //sets correct velocity factor for PID loop when gearing=18
+		else if(Llift.get_gearing() == pros::E_MOTOR_GEARSET_18 && Rlift.get_gearing() == pros::E_MOTOR_GEARSET_18){
+			Llift_power = liftControl * 2; //sets correct velocity factor for PID loop when gearing=18
+			Rlift_power = liftControl * 2; //sets correct velocity factor for PID loop when gearing=18
 		}
-		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_06 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_06){
-			tilterControl = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
+		else if(Llift.get_gearing() == pros::E_MOTOR_GEARSET_06 && Rlift.get_gearing() == pros::E_MOTOR_GEARSET_06){
+			Llift_power = liftControl * 6; //sets correct velocity factor for PID loop when gearing=06
+			Rlift_power = liftControl * 6; //sets correct velocity factor for PID loop when gearing=06
 		}
 
 		if(abs(left) > creep || abs(right) > creep){ //eliminate miscalibration in motors
 			Ldrive.move(left); //move Ldrive
-			Rdrive.move(right); //move Rdrive
+			Rdrive.move(right); //move Rdrive                                   //ignore will be replaced with PID control.
 	  }
 		else{}
 
-		if(tilterControl==127){
-			Ltilter.move(tilterControl);
-			Rtilter.move(tilterControl);
+		if(Llift_power > 0 && Rlift_power > 0){ //if power values are positive
+			Llift.move_velocity(Llift_power); //go forwards at defined rpm using PID
+			Rlift.move_velocity(Rlift_power); //go forwards at defined rpm using PID
 		}
-		else if(tilterControl==-127){
-			Ltilter.move(tilterControl);
-			Rtilter.move(tilterControl);
+		else if(Llift_power < 0 && Rlift_power < 0){ //if power values are negative
+			Llift.move_velocity(Llift_power); //go backwards at defined rpm using PID
+			Rlift.move_velocity(Rlift_power); //go backwards at defined rpm using PID
 		}
-		else{
-			Ltilter.move_velocity(0);
-			Rtilter.move_velocity(0);
+		else{ //else stop 
+			Llift.move_velocity(0); //stop motor and use braketype defined above
+			Rlift.move_velocity(0); //stop motor and use braketype defined above
 		}
 
 		pros::delay(20);
