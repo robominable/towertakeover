@@ -98,9 +98,15 @@ void opcontrol() {
 		float creep = 10; //virtual deadzone amount
 		int tilterButtonUp = master.get_digital(DIGITAL_X); //tilter up button
 		int tilterButtonDown = master.get_digital(DIGITAL_A); //tilter down button
+		int liftButtonUp = master.get_digital(DIGITAL_L1); // lift up button
+		int liftButtonDown = master.get_digital(DIGITAL_L2); // lift down button
+
 		int tilterControl = 0; //tilter velocity value (set in later function)
-		int tilterUpPower = 127; //speed to be set when tilterButtonUp is pressed
-		int tilterDownPower = -127; //speed to be set when tilterButtonDown is pressed
+		int tilterUpPower = 100; //speed to be set when tilterButtonUp is pressed
+		int tilterDownPower = -100; //speed to be set when tilterButtonDown is pressed
+		int liftUpPower = 100; //speed to be set when liftButtonUp is pressed
+		int liftDownPower = -100; //speed to be set when liftButtonDown is pressed
+		int liftControl = 0; //lift velocity value (set in later function)
 
 		Ldrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST); //universal coast braketype for Ldrive
 		Rdrive.set_brake_mode(pros::E_MOTOR_BRAKE_COAST); //universal coast braketype for Rdrive
@@ -136,6 +142,40 @@ void opcontrol() {
 		}
 		else if(tilterButtonDown){
 			tilterControl = tilterDownPower; //set tilter power to backward at tilterDownPower amount
+		}
+
+		if(liftButtonUp){
+			liftControl = liftUpPower; //sets lift power to up at liftUpPower amount
+		}
+		else if(tilterButtonDown){
+			liftControl = liftDownPower; //sets lift power to down at liftDownPower amount
+		}
+		else{
+			liftControl = 0; //sets lift power to 0 if neither up nor down is present
+		}
+
+		//tilter PID velocity scaling
+		if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_36 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_36){
+			Ltilter_power = tilterControl * 1; //sets correct velocity factor for PID loop when gearing=36
+			Rtilter_power = tilterControl * 1; //sets correct velocity factor for PID loop when gearing=36
+		}
+		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_18 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_18){
+			Ltilter_power = tilterControl * 2; //sets correct velocity factor for PID loop when gearing=18
+			Rtilter_power = tilterControl * 2; //sets correct velocity factor for PID loop when gearing=18
+		}
+		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_06 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_06){
+			Ltilter_power = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
+			Rtilter_power = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
+		}
+		//lift PID velocity scaling
+		if(Llift.get_gearing() == pros::E_MOTOR_GEARSET_36 && Llift.get_gearing() == pros::E_MOTOR_GEARSET_36){
+			tilterControl = tilterControl * 1; //sets correct velocity factor for PID loop when gearing=36
+		}
+		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_18 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_18){
+			tilterControl = tilterControl * 2; //sets correct velocity factor for PID loop when gearing=18
+		}
+		else if(Ltilter.get_gearing() == pros::E_MOTOR_GEARSET_06 && Rtilter.get_gearing() == pros::E_MOTOR_GEARSET_06){
+			tilterControl = tilterControl * 6; //sets correct velocity factor for PID loop when gearing=06
 		}
 
 		if(abs(left) > creep || abs(right) > creep){ //eliminate miscalibration in motors
