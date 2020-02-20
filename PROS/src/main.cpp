@@ -120,6 +120,17 @@ void opcontrol() {
 		Llift.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Llift encoder to use torque cartridge
 		Rlift.set_gearing(pros::E_MOTOR_GEARSET_36); //sets Rlift encoder to use torque cartridge
 
+
+		//power is multiplied by 1 for gearset_36, 2 for gearset_18, and 6 for gearset_06
+		float Ldrive_power = 0; //is the variable that is used to set PID velocity control for Ldrive
+		float Rdrive_power = 0; //is the variable that is used to set PID velocity control for Rdrive
+		int Ltilter_power = 0; //is the variable that is used to set PID velocity control for Ltilter
+		int Rtilter_power = 0; //is the variable that is used to set PID velocity control for Rtilter
+		int Lintake_power = 0; //is the variable that is used to set PID velocity control for Lintake
+		int Rintake_power = 0; //is the variable that is used to set PID velocity control for Rintake
+		int Llift_power = 0; //is the variable that is used to set PID velocity control for Llift
+		int Rlift_power = 0; //is the variable that is used to set PID velocity control for Rlift
+
 		if(tilterButtonUp){
 			tilterControl = tilterUpPower; //set tilter power to forward  at tilterUpPower amount
 		}
