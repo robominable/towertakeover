@@ -19,7 +19,7 @@ vex::controller Controller = vex::controller(vex::controllerType::primary);
 //motors
 vex::motor FLdrive = vex::motor(PORT14, vex::gearSetting::ratio18_1, false); //ports may need to be changed later based on dead ports
 vex::motor FRdrive = vex::motor(PORT13, vex::gearSetting::ratio18_1, true); //ports may need to be changed later based on dead ports
-vex::motor DR4B1 = vex::motor(PORT15, vex::gearSetting::ratio36_1, false);
+vex::motor DR4B1 = vex::motor(PORT16, vex::gearSetting::ratio36_1, false);
 vex::motor DR4B2 = vex::motor(PORT18, vex::gearSetting::ratio36_1, true);
 vex::motor liftMotor = vex::motor(PORT20, vex::gearSetting::ratio36_1, true);
 vex::motor intakeL = vex::motor(PORT12, vex::gearSetting::ratio6_1, false);
@@ -112,9 +112,11 @@ void autonomous( void ) {
       if((int)myReadBuffer[i+0]){
         FLdrive.spin(forward, (int)myReadBuffer[i+0], pct);
       }
-      
-      if((int)myReadBuffer[i+3]){
+      else if((int)myReadBuffer[i+3]){
         FLdrive.spin(reverse, ((float)myReadBuffer[i+3]), pct);
+      }
+      else{
+        FLdrive.stop();
       }
       
       //else{
@@ -124,22 +126,44 @@ void autonomous( void ) {
       if((int)myReadBuffer[i+1]){
         FRdrive.spin(forward, (int)myReadBuffer[i+1], pct);
       }
-      
-      if((int)myReadBuffer[i+4]){
+      else if((int)myReadBuffer[i+4]){
         FRdrive.spin(reverse, ((float)myReadBuffer[i+4]), pct);
+      }
+      else {
+        FRdrive.stop();
       }
       //else {
       //  Rmotor.stop();
       //}
 
-      if((int)myReadBuffer[i+2]){
-        DR4B.spin(forward, (int)myReadBuffer[i+2], pct);
+      if((int)myReadBuffer[i+8]){
+        DR4B.spin(forward, (int)myReadBuffer[i+8], pct);
       }
-      else if((int)myReadBuffer[i+5]){
-        DR4B.spin(reverse, (int)myReadBuffer[i+5], pct);
+      else if((int)myReadBuffer[i+9]){
+        DR4B.spin(reverse, (int)myReadBuffer[i+9], pct);
       }
       else{
         DR4B.stop();
+      }
+
+      if((int)myReadBuffer[i+2]){
+        clawMotor.spin(forward, (int)myReadBuffer[i+2], pct);
+      }
+      else if((int)myReadBuffer[i+5]){
+        clawMotor.spin(reverse, (int)myReadBuffer[i+5], pct);
+      }
+      else{
+        clawMotor.stop();
+      }
+
+      if((int)myReadBuffer[i+10]){
+        liftMotor.spin(forward, (int)myReadBuffer[i+10], pct);
+      }
+      else if((int)myReadBuffer[i+11]){
+        liftMotor.spin(reverse, (int)myReadBuffer[i+11], pct);
+      }
+      else{
+        liftMotor.stop();
       }
       //else {
         //Lift.stop(brakeType::brake);
@@ -165,7 +189,7 @@ void usercontrol( void ) {
         }
             else{
                 FRdrive.stop();
-              }
+            }
     if(Controller.ButtonA.pressing() == 1){
       liftMotor.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
     }
